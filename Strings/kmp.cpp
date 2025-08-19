@@ -20,7 +20,7 @@ v64 kmp(string s, string t) {
     string st = s + '#' + t;
     v64 pi = prefix_function(st);
     v64 pos;
-    forn (i, 0, n) {
+    forn (i, 0, pi.size()) {
         if (pi[i] == n) pos.push_back(i - 2 * n);
     } 
     return pos;
