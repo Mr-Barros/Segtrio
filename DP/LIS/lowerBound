@@ -1,6 +1,7 @@
 // trocar para upper_bound para estritamente crescente
-// retorna tamanho da LIS
-// NAO recupera sequência
+// retorna apenas tamanho da LIS
+// O(n*log(n))
+
 ll lis(v64& v){
     ll n = v.size();
     v64 dp(n+1, INF);
