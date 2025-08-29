@@ -1,5 +1,6 @@
 // Recupera a LIS encontrada
 // trocar para upper_bound para estritamente crescente
+// O(n*log(n))
 
 v64 lis(v64& v){
     ll n = v.size();
