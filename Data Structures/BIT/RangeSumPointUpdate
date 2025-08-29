@@ -1,5 +1,5 @@
 
-struct BIT { // indexada a 1, range sum point update. O(N) espaco e construcao
+struct BIT { // indexada a 1, range query (sum) point update. O(N) espaco e construcao
     v64 bit;
     ll n;
 
