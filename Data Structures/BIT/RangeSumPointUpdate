@@ -2,7 +2,7 @@
 // O(n) espaco e construcao
 // O(log(n)) queries
 
-struct BIT { // indexada a 1, range sum point update. O(N) espaco e construcao
+struct BIT { 
     v64 bit;
     ll n;
 
