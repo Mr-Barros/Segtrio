@@ -1,6 +1,6 @@
 # Segtrio - Algoritmos
 
-_Gerado em Fri Sep 12 12:50:30 -03 2025_
+_Gerado em Fri Sep 12 13:01:21 -03 2025_
 
 Este documento consolida todos os arquivos .cpp do projeto com índice.
 
@@ -30,7 +30,8 @@ ll count_multiples(ll r, v64& p) {
         sum += sig * cur;
     }
     return sum;
-}```
+}
+```
 
 ## DP/SubsetSumOptimization.cpp
 
@@ -74,6 +75,7 @@ for(auto sz : big){ // k * (k/lim)/64 operacoes
     ll ct = min(cnt[sz], k/sz);
     forn(i,0,ct) b |= (b << sz); 
 }
+
 ```
 
 ## DP/bitmask.cpp
@@ -99,6 +101,7 @@ forn(mask,0,sz){ // fazer algo a cada mask. Exemplo (hamiltonian flights):
         }
     }
 }
+
 ```
 
 ## Data Structures/BIT/PointQueryRangeUpdate.cpp
@@ -148,6 +151,7 @@ struct BIT { // indexada a 1, range update point sum. O(N) espaco e construcao
         add(r + 1, -val);
     }
 };
+
 ```
 
 ## Data Structures/BIT/RangeMinPointUpdate.cpp
@@ -187,6 +191,7 @@ struct BIT {
             bit[idx] = min(bit[idx], val);
     }
 };
+
 ```
 
 ## Data Structures/BIT/RangeSumPointUpdate.cpp
@@ -237,6 +242,7 @@ struct BIT {
         add(i, val - query(i,i));
     }
 };
+
 ```
 
 ## Data Structures/Segtree/segLazy.cpp
@@ -332,6 +338,7 @@ struct tree {
         return node::comb(lc->query(lq, rq), rc->query(lq, rq));
     }
 };
+
 ```
 
 ## Data Structures/dsu.cpp
@@ -357,7 +364,8 @@ struct dsu {
         if (sz[a] < sz[b]) swap(a, b);
         sz[a] += sz[b], id[b] = a;
     }
-};```
+};
+```
 
 ## Data Structures/mo.cpp
 
@@ -404,6 +412,7 @@ void solve() {
     }
     forn(i,0,m) cout << ans[i] << ln;
 }
+
 ```
 
 ## Data Structures/sqrt.cpp
@@ -453,6 +462,7 @@ void solve() {
         forn(i,br*len, r+1) {}
     }
 }
+
 ```
 
 ## Geometry/notes.cpp
@@ -487,6 +497,7 @@ struct pt{ ld x,y; pt(ld x_=0,ld y_=0):x(x_),y(y_){} ld operator^(const pt& p)co
 inline ld dist2(pt p, pt q){ ld dx=p.x-q.x,dy=p.y-q.y; return dx*dx+dy*dy; }
 inline int half(const pt& p){ if(p.y<0) return 0; if(p.y>0) return 1; return (p.x<=0)?0:1; }
 inline bool angCmp(const pt& a,const pt& b){int ha=half(a), hb=half(b); if(ha!=hb) return ha<hb; ld cr=(a^b); if(!eq(cr,0))
+
 ```
 
 ## Graph Theory/dijkstra.cpp
@@ -529,6 +540,87 @@ void dijkstra(ll s, v64& d, v64& p) {
             }
         }
     }
+}
+
+```
+
+## Graph Theory/dinitz.cpp
+
+**Caminho**: `Graph Theory/dinitz.cpp`
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const ll INF = 0x3f3f3f3f3f3f3f3fll;
+
+struct dinitz {
+	const bool scaling = false; // com scaling -> O(nm log(MAXCAP)),
+	int lim;                    // com constante alta
+	struct edge {
+		int to, cap, rev, flow;
+		bool res;
+		edge(int to_, int cap_, int rev_, bool res_)
+			: to(to_), cap(cap_), rev(rev_), flow(0), res(res_) {}
+	};
+
+	vector<vector<edge>> g;
+	vector<int> lev, beg;
+	ll F;
+	dinitz(int n) : g(n), F(0) {}
+
+	void add(int a, int b, int c) {
+		g[a].emplace_back(b, c, g[b].size(), false);
+		g[b].emplace_back(a, 0, g[a].size()-1, true);
+	}
+	bool bfs(int s, int t) {
+		lev = vector<int>(g.size(), -1); lev[s] = 0;
+		beg = vector<int>(g.size(), 0);
+		queue<int> q; q.push(s);
+		while (q.size()) {
+			int u = q.front(); q.pop();
+			for (auto& i : g[u]) {
+				if (lev[i.to] != -1 or (i.flow == i.cap)) continue;
+				if (scaling and i.cap - i.flow < lim) continue;
+				lev[i.to] = lev[u] + 1;
+				q.push(i.to);
+			}
+		}
+		return lev[t] != -1;
+	}
+	int dfs(int v, int s, int f = INF) {
+		if (!f or v == s) return f;
+		for (int& i = beg[v]; i < g[v].size(); i++) {
+			auto& e = g[v][i];
+			if (lev[e.to] != lev[v] + 1) continue;
+			int foi = dfs(e.to, s, min(f, e.cap - e.flow));
+			if (!foi) continue;
+			e.flow += foi, g[e.to][e.rev].flow -= foi;
+			return foi;
+		}
+		return 0;
+	}
+	ll max_flow(int s, int t) {
+		for (lim = scaling ? (1<<30) : 1; lim; lim /= 2)
+			while (bfs(s, t)) while (int ff = dfs(s, t)) F += ff;
+		return F;
+	}
+};
+
+// Recupera as arestas do corte s-t
+vector<pair<int, int>> get_cut(dinitz& g, int s, int t) {
+	g.max_flow(s, t);
+	vector<pair<int, int>> cut;
+	vector<int> vis(g.g.size(), 0), st = {s};
+	vis[s] = 1;
+	while (st.size()) {
+		int u = st.back(); st.pop_back();
+		for (auto e : g.g[u]) if (!vis[e.to] and e.flow < e.cap)
+			vis[e.to] = 1, st.push_back(e.to);
+	}
+	for (int i = 0; i < g.g.size(); i++) for (auto e : g.g[i])
+		if (vis[i] and !vis[e.to] and !e.res) cut.emplace_back(i, e.to);
+	return cut;
 }
 ```
 
@@ -607,7 +699,8 @@ void dfs(ll u, v64& id) {
 void get_cut(ll s, ll t) {
     v64 id(n, 0);
     dfs(s, id);
-}```
+}
+```
 
 ## Graph Theory/kosaraju.cpp
 
@@ -670,7 +763,8 @@ void kosaraju(vector<v64>& adj, vector<v64>& scc, vector<v64>& adj_cond) {
             if (roots[u] != roots[v]) adj_cond[roots[u]].push_back(roots[v]);
         }
     }
-}```
+}
+```
 
 ## Graph Theory/kruskal.cpp
 
@@ -715,6 +809,7 @@ vector<Edge> kruskal(ll n, vector<Edge>& edges) {
 
     return result;
 }
+
 ```
 
 ## Graph Theory/lca.cpp
@@ -767,6 +862,7 @@ void preprocess(ll root) {
     up.assign(n, v64(l + 1));
     dfs(root, root);
 }
+
 ```
 
 ## Graph Theory/prim.cpp
@@ -825,6 +921,7 @@ void prim() {
 
     cout << total_weight << ln;
 }
+
 ```
 
 ## Graph Theory/topsort.cpp
@@ -888,7 +985,8 @@ bool kahn() {
     }
     if (idx != n) return false;
     return true;
-}```
+}
+```
 
 ## Math/sieveFi.cpp
 
@@ -927,6 +1025,7 @@ vector<sieveCell> makeSieve(){
     }
     return sv;
 }
+
 ```
 
 ## Math/singlePrimeFactors.cpp
@@ -954,6 +1053,7 @@ map<ll,ll> calcPrimeFactors(ll n) {
     if (n > 1) pfact[n] = 1;
     return pfact;
 } 
+
 ```
 
 ## Miscellaneous/permutations.cpp
@@ -971,6 +1071,7 @@ do
     // não usar nada com overhead (set, map...)
 }
 while (next_permutation(v.begin(), v.end()));
+
 ```
 
 ## Miscellaneous/ternary_search.cpp
@@ -999,7 +1100,8 @@ double ternary_search(double l, double r) {
             r = m2;
     }
     return f(l);                    //return the maximum of f(x) in [l, r]
-}```
+}
+```
 
 ## Strings/hash.cpp
 
@@ -1102,6 +1204,7 @@ ll B, ll M1=1000000007LL, ll M2=1000000009LL){
   return {c1, c2};
   }
 };
+
 ```
 
 ## Strings/kmp.cpp
