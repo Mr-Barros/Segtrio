@@ -1,0 +1,31 @@
+// Recupera a LIS encontrada
+// trocar para upper_bound para estritamente crescente
+// O(n*log(n))
+
+v64 lis(v64& v){
+    ll n = v.size();
+    v64 dp(n+1, INF);
+    dp[0] = -INF;
+    v64 dpI(n+1, INF);
+    
+    v64 prev(n, -INF);
+    ll len = 0;
+    forn(i,0,n){
+        auto it = lower_bound(dp.begin(), dp.end(), v[i]);
+        *it = v[i];
+        ll d = it - dp.begin();
+        len = max(len, d);
+
+        dpI[d] = i;
+        prev[i] = dpI[d-1];
+    }
+
+    v64 vout;
+    ll idx = dpI[len];
+    while(idx != INF){
+        vout.push_back(v[idx]);
+        idx = prev[idx];
+    }
+    reverse(vout.begin(), vout.end());
+    return vout;
+}

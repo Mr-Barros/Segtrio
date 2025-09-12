@@ -1,0 +1,44 @@
+
+struct BIT { // indexada a 1, range max point update. O(N) espaco e construcao
+    v64 bit;
+    ll n;
+
+    BIT(ll sz){
+        n = sz + 1;
+        bit.assign(n, -INF);
+    }
+
+    ll prefMax(ll i){
+        ll maxV = 0;
+        for(++i; i > 0; i -= i & -i) 
+            maxV = max(maxV,bit[i]);
+        return maxV;
+    }
+
+    void update(ll i, ll val){
+        for(++i; i < n; i += i & -i)
+            bit[i] = max(bit[i], val);
+    }
+};
+
+ll lis(v64& v){
+    ll n = v.size();
+
+    // compressão de coordenadas - necessário se valores forem muito grandes
+    v64 comp = v;
+    sort(comp.begin(), comp.end());
+    comp.erase(unique(comp.begin(), comp.end()), comp.end());
+    forn(i,0,n){
+        v[i] = lower_bound(comp.begin(), comp.end(), v[i]) - comp.begin();
+    }
+
+    BIT b(n);
+    ll len = 0;
+    forn(i,0,n){
+        ll best = (v[i] > 0 ? b.prefMax(v[i]-1) : 0);
+        ll cur = best + 1;
+        b.update(v[i], cur);
+        len = max(len, cur);
+    }
+    return len;
+}

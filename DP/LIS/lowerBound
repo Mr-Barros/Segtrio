@@ -1,0 +1,18 @@
+// trocar para upper_bound para estritamente crescente
+// retorna apenas tamanho da LIS
+// O(n*log(n))
+
+ll lis(v64& v){
+    ll n = v.size();
+    v64 dp(n+1, INF);
+    dp[0] = -INF;
+
+    ll pos = 0;
+    forn(i,0,n){
+        auto it = lower_bound(dp.begin(), dp.end(), v[i]);
+        *it = v[i];
+        ll d = it - dp.begin();
+        pos = max(pos, d);
+    }
+    return pos;
+}

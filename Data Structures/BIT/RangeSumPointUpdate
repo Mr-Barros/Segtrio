@@ -1,0 +1,43 @@
+// indexada a 1, range sum point update. 
+// O(n) espaco e construcao
+// O(log(n)) queries
+
+struct BIT { 
+    v64 bit;
+    ll n;
+
+    BIT(ll sz){
+        n = sz + 1;
+        bit.assign(n, 0);
+    }
+
+    BIT(const v64& v) : BIT(v.size()) {
+        forn(i,1,n){
+            bit[i] += v[i-1];
+            ll j = i + (i & -i);
+            if(j < n)
+                bit[j] += bit[i];
+        }
+    }
+
+    ll prefSum(ll i){
+        ll sum = 0;
+        for(++i; i > 0; i -= i & -i) 
+            sum += bit[i];
+        return sum;
+    }
+
+    ll query(ll a, ll b){
+        return prefSum(b) - prefSum(a-1);
+    }
+
+    void add(ll i, ll delta){
+        for(++i; i < n; i += i & -i){
+            bit[i] += delta;
+        }
+    }
+
+    void set(ll i, ll val){
+        add(i, val - query(i,i));
+    }
+};
