@@ -17,10 +17,12 @@ const ll INF = 0x3f3f3f3f3f3f3f3fll;
     template<typename Head, typename... Tail>
     void dbg_out(Head H, Tail... T) { cerr << ' ' << H; dbg_out(T...); }
     #define dbg(...) cerr << "(" << #__VA_ARGS__ << "):", dbg_out(__VA_ARGS__) 
-#else
-    #define dbg(...) (void) 0
     #define dbgv(v) cerr << "(" #v "): "; for (auto x : v) cerr << x << " "; cerr << ln;
     #define dbgg(g) cerr << "(" #g "): \n"; forn(i,0,sz(g)){ cerr << i << ": "; for(auto x:g[i]) cerr << x << " " ; cerr << '\n';}
+#else
+    #define dbg(...) (void) 0
+    #define dbgv(...) (void) 0
+    #define dbgg(...) (void) 0
 #endif
 
 void solve() {
