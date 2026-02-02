@@ -18,7 +18,7 @@ const ll INF = 0x3f3f3f3f3f3f3f3fll;
     void dbg_out(Head H, Tail... T) { cerr << ' ' << H; dbg_out(T...); }
     #define dbg(...) cerr << "(" << #__VA_ARGS__ << "):", dbg_out(__VA_ARGS__) 
     #define dbgv(v) cerr << "(" #v "): "; for (auto x : v) cerr << x << " "; cerr << ln;
-    #define dbgg(g) cerr << "(" #g "): \n"; forn(i,0,sz(g)){ cerr << i << ": "; for(auto x:g[i]) cerr << x << " " ; cerr << '\n';}
+    #define dbgg(g) cerr << "(" #g "): \n"; forn(i, 0, sz(g)) { cerr << i << ": "; for (auto x : g[i]) cerr << x << " " ; cerr << '\n'; }
 #else
     #define dbg(...) (void) 0
     #define dbgv(...) (void) 0
@@ -29,7 +29,7 @@ void solve() {
     
 }
 
-int main(void) {
+signed main(void) {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
